@@ -25,11 +25,18 @@ var watchID = navigator.geolocation.watchPosition(function(position) {
   var body = "Location:" + position.coords.latitude + "," + position.coords.longitude;
   var startPoint = Settings.data(START_LOCATION);
   if (position.coords.speed) {
+    //Returns a double representing the velocity of the device in meters per second. This value can be null.
     body += "\nSpeed:" + position.coords.speed;
   }
   if (position.coords.altitude) {
+    //Returns a double representing the position's altitude in metres, relative to sea level. This value can be null if the implementation cannot provide the data.
     body += "\nAltitude:" + position.coords.altitude;
   }
+  
+  if (position.coords.accuracy) {
+    body += "\nLocAccuracy:" + position.coords.accuracy;
+  }
+  
   if (startPoint) {
     var dist = distance(startPoint.coords.longitude, startPoint.coords.latitude, position.coords.longitude, position.coords.latitude);
     body += "\nDistance:" + dist + "KM";
