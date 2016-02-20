@@ -4,6 +4,7 @@ var Store = require('store');
 var UI = require('ui');
 var ajax = require('ajax');
 var WatchView = require('watchcard');
+var WatchWin = require('watchwin');
 
 
 var ADD_NEW_LOCATION= 'New Location';
@@ -53,7 +54,9 @@ exports.getMenu = function() {
         });
       });
     } else {
-      var view = WatchView.getCard(e.item.coords);
+//       var view = WatchView.getCard(e.item.coords);
+      var view = WatchWin.getWindow(e.item.coords);
+
       view.show();
     }
 
