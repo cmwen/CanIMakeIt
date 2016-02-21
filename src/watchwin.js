@@ -6,8 +6,12 @@ var ajax = require('ajax');
 var Locations = require('locations');
 var Vector2 = require('vector2');
 
+var HOUR_MILLI = 1000 * 60 * 60;
 
 exports.getWindow = function(coords) {
+  var startTime = Date.now();
+  var startPosition;
+  
   var main = new UI.Window({
     fullscreen: true
   });
@@ -17,6 +21,7 @@ exports.getWindow = function(coords) {
   // Distance
   // Line *---- X---- *
   // Speed
+  // Accu/ alttitute ?
   var address = new UI.Text({
     text: "Berowra Station, Pacific Hightway",
      position: new Vector2(0, 0),
@@ -44,7 +49,6 @@ exports.getWindow = function(coords) {
   });
   main.add(timeLabel);
 
-
   var eta = new UI.Text({
     text: "8:27",
      position: new Vector2(0, 25),
@@ -64,7 +68,6 @@ exports.getWindow = function(coords) {
   textAlign: 'center'
 });
   main.add(currentTime);
-
 
   // 55  ~ 75
   var line = new UI.Rect({
@@ -104,7 +107,7 @@ var current = new UI.Circle({
      text: "Distance: 1.5km",
      position: new Vector2(0, 95),
      size: new Vector2(72, 30),
-      textOverflow: 'wrap'
+     textOverflow: 'wrap'
   });
   main.add(distanceToTarget);
   
@@ -128,31 +131,42 @@ current.animate('position', pos);
 pos.x -= 10;
 current.animate('position', pos);
   });
+
+  var watchID;
+  main.on('show', function(){
+    watchID = navigator.geolocation.watchPosition(function(position) {
+
+      var distToTarget = distance(coords.longitude, coords.latitude, position.coords.longitude, position.coords.latitude);
+
+      if (startPosition) {
+        // Speed
+        var dist = distance(startPoint.longitude, startPoint.latitude, position.coords.longitude, position.coords.latitude);
+        var duration = Date.now() - startTime;
+        var speed = dist / (duration / HOUR_MILLI);
+        var estimateTime = distToTarget / speed; // in hour
+        
+        // Moving away from target? Check the accuracy. If true, reset the start point
+        if (dist + startPoint.accuracy * 1000 > distToTarget + coords.accuracy + 1000) {
+          startPoint = position.coords;
+        }
+      } else {
+        startPosition = position.coords;
+      }
+      
+      main.body(body);
+    }, function(error){
+      console.log(error);
+    }, {
+        enableHighAccuracy: true
+    });
+  });
   
-//   var watchID = navigator.geolocation.watchPosition(function(position) {
-//   //   console.log(position.coords.latitude, position.coords.longitude);
-//     var body = "Location:" + position.coords.latitude + "," + position.coords.longitude;
-//     var startPoint = coords;
-//     if (position.coords.speed) {
-//       //Returns a double representing the velocity of the device in meters per second. This value can be null.
-//       body += "\nSpeed:" + position.coords.speed;
-//     }
-//     if (position.coords.altitude) {
-//       //Returns a double representing the position's altitude in metres, relative to sea level. This value can be null if the implementation cannot provide the data.
-//       body += "\nAltitude:" + position.coords.altitude;
-//     }
-    
-//     if (position.coords.accuracy) {
-//       body += "\nLocAccuracy:" + position.coords.accuracy;
-//     }
-    
-//     if (startPoint) {
-//       var dist = distance(startPoint.longitude, startPoint.latitude, position.coords.longitude, position.coords.latitude);
-//       body += "\nDistance:" + dist + "KM";
-//     }
-    
-//     main.body(body);
-//   });
+  main.on('hide', function(){
+    if (watchID) {
+      navigator.geolocation.clearWatch(watchID);
+    }
+  });
+  
   
   return main;  
 };

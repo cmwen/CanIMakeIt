@@ -13,6 +13,7 @@ var MARKED_LOCATIONS = 'markedLocations';
 // }
 exports.addLocation = function (/*object*/ location) {
   var markedLocations = Settings.data(MARKED_LOCATIONS);
+  
   if (!markedLocations) {
     markedLocations = [];
   }
@@ -22,4 +23,4 @@ exports.addLocation = function (/*object*/ location) {
 
 exports.getLocations = function() {
   return Settings.data(MARKED_LOCATIONS);
- };
+};

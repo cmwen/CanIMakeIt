@@ -66,8 +66,8 @@ exports.getMenu = function() {
 };
 
 function reloadLocation(menu) {
-      var locations = Store.getLocations();
-    if (locations) {
+  var locations = Store.getLocations();
+  if (locations) {
       // Sort the triggers by the counter, so the most frequent used will go first
 //       triggers = triggers.sort(function(a, b) {
 //         return a.counter < b.counter;
@@ -75,5 +75,5 @@ function reloadLocation(menu) {
 
       menu.items(0, locations);
       menu.selection(0, 0);
-    }
+  }
 }
