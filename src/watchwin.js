@@ -11,11 +11,11 @@ var HOUR_MILLI = 1000 * 60 * 60;
 exports.getWindow = function(coords) {
   var startTime = Date.now();
   var startPosition;
-  
+
   var main = new UI.Window({
     fullscreen: true
   });
-  
+
   // Address
   // ETA
   // Distance
@@ -36,7 +36,7 @@ exports.getWindow = function(coords) {
     position: new Vector2(0, 15),
     size: new Vector2(72, 15),
     font: 'gothic-14',
-    textAlign: 'center'    
+    textAlign: 'center'
   });
   main.add(etaLabel);
 
@@ -45,7 +45,7 @@ exports.getWindow = function(coords) {
     position: new Vector2(72, 15),
     size: new Vector2(72, 15),
     font: 'gothic-14',
-    textAlign: 'center'    
+    textAlign: 'center'
   });
   main.add(timeLabel);
 
@@ -55,18 +55,18 @@ exports.getWindow = function(coords) {
     size: new Vector2(72, 45),
   font: 'gothic-28-bold',
   color: 'white',
-  textAlign: 'center'    
+  textAlign: 'center'
   });
   main.add(eta);
-  
+
  var currentTime = new UI.TimeText({
-  position: new Vector2(72, 25),
-  size: new Vector2(72, 45),
-  text: "%H:%M",
-  font: 'gothic-28-bold',
-  color: 'white',
-  textAlign: 'center'
-});
+    position: new Vector2(72, 25),
+    size: new Vector2(72, 45),
+    text: "%H:%M",
+    font: 'gothic-28-bold',
+    color: 'white',
+    textAlign: 'center'
+  });
   main.add(currentTime);
 
   // 55  ~ 75
@@ -94,7 +94,7 @@ var end = new UI.Circle({
 
 });
   main.add(end);
-  
+
 var current = new UI.Circle({
   position: new Vector2(74, 76),
   radius: 6,
@@ -110,7 +110,7 @@ var current = new UI.Circle({
      textOverflow: 'wrap'
   });
   main.add(distanceToTarget);
-  
+
   var speed = new UI.Text({
     text: "Speed: 5km/h",
      position: new Vector2(72, 95),
@@ -125,17 +125,16 @@ var current = new UI.Circle({
 pos.x += 10;
 current.animate('position', pos);
   });
-  
+
   main.on('click', 'down', function(e) {
     var pos = current.position();
-pos.x -= 10;
-current.animate('position', pos);
+    pos.x -= 10;
+    current.animate('position', pos);
   });
 
   var watchID;
   main.on('show', function(){
     watchID = navigator.geolocation.watchPosition(function(position) {
-
       var distToTarget = distance(coords.longitude, coords.latitude, position.coords.longitude, position.coords.latitude);
 
       if (startPosition) {
@@ -144,7 +143,7 @@ current.animate('position', pos);
         var duration = Date.now() - startTime;
         var speed = dist / (duration / HOUR_MILLI);
         var estimateTime = distToTarget / speed; // in hour
-        
+
         // Moving away from target? Check the accuracy. If true, reset the start point
         if (dist + startPoint.accuracy * 1000 > distToTarget + coords.accuracy + 1000) {
           startPoint = position.coords;
@@ -152,7 +151,7 @@ current.animate('position', pos);
       } else {
         startPosition = position.coords;
       }
-      
+
       main.body(body);
     }, function(error){
       console.log(error);
@@ -160,25 +159,25 @@ current.animate('position', pos);
         enableHighAccuracy: true
     });
   });
-  
+
   main.on('hide', function(){
     if (watchID) {
       navigator.geolocation.clearWatch(watchID);
     }
   });
-  
-  
-  return main;  
+
+
+  return main;
 };
 
   function distance(lon1, lat1, lon2, lat2) {
     var R = 6371; // Radius of the earth in km
     var dLat = (lat2-lat1).toRad();  // Javascript functions in radians
-    var dLon = (lon2-lon1).toRad(); 
+    var dLon = (lon2-lon1).toRad();
     var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
-            Math.sin(dLon/2) * Math.sin(dLon/2); 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     var d = R * c; // Distance in km
     return d;
   }
