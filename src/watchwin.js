@@ -204,7 +204,6 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
     }
   });
 
-
   return watchWindow;
 };
 
