@@ -50,7 +50,7 @@ exports.getWindow = function(coords) {
   main.add(timeLabel);
 
   var eta = new UI.Text({
-    text: "8:27",
+    text: "--:--",
      position: new Vector2(0, 25),
     size: new Vector2(72, 45),
   font: 'gothic-28-bold',
@@ -69,19 +69,28 @@ exports.getWindow = function(coords) {
 });
   main.add(currentTime);
 
+    // 55  ~ 75
+  var background = new UI.Rect({
+  position: new Vector2(0, 55),
+  size: new Vector2(144, 40),
+  backgroundColor: 'white'
+});
+  main.add(background);
+
+
   // 55  ~ 75
   var line = new UI.Rect({
   position: new Vector2(10, 75),
   size: new Vector2(124, 3),
-  backgroundColor: 'white'
+  backgroundColor: 'black'
 });
   main.add(line);
 
   var start = new UI.Circle({
   position: new Vector2(10, 76),
   radius: 4,
-  backgroundColor: 'black',
-  borderColor: 'white'
+  backgroundColor: 'white',
+  borderColor: 'black'
 
 });
   main.add(start);
@@ -89,8 +98,8 @@ exports.getWindow = function(coords) {
 var end = new UI.Circle({
   position: new Vector2(134, 76),
   radius: 4,
-  backgroundColor: 'black',
-  borderColor: 'white'
+  backgroundColor: 'white',
+  borderColor: 'black'
 
 });
   main.add(end);
@@ -98,24 +107,51 @@ var end = new UI.Circle({
 var current = new UI.Circle({
   position: new Vector2(74, 76),
   radius: 6,
-  backgroundColor: 'white',
-  borderColor: 'white'
+  backgroundColor: 'black',
+  borderColor: 'black'
 });
   main.add(current);
 
-  var distanceToTarget = new UI.Text({
-     text: "Distance: 1.5km",
+  var distanceLabel = new UI.Text({
+     text: "Distance",
      position: new Vector2(0, 95),
+     size: new Vector2(72, 15),
+     font: 'gothic-14',
+     textAlign: 'center' 
+  });
+  main.add(distanceLabel);
+
+
+  var distanceToTarget = new UI.Text({
+     text: "---- m",
+     position: new Vector2(0, 110),
      size: new Vector2(72, 30),
-     textOverflow: 'wrap'
+  font: 'gothic-28-bold',
+  color: 'white',
+  textAlign: 'center'    
+
   });
   main.add(distanceToTarget);
-  
-  var speed = new UI.Text({
-    text: "Speed: 5km/h",
+
+  var speedLabel = new UI.Text({
+    text: "Speed",
      position: new Vector2(72, 95),
+    size: new Vector2(72, 15),
+     font: 'gothic-14',
+     textAlign: 'center' 
+
+  });
+  main.add(speedLabel);
+
+
+  var speed = new UI.Text({
+    text: "-- km/h",
+     position: new Vector2(72, 110),
     size: new Vector2(72, 30),
-    textOverflow: 'wrap'
+  font: 'gothic-28-bold',
+  color: 'white',
+  textAlign: 'center'    
+
   });
   main.add(speed);
 
@@ -142,18 +178,29 @@ current.animate('position', pos);
         // Speed
         var dist = distance(startPoint.longitude, startPoint.latitude, position.coords.longitude, position.coords.latitude);
         var duration = Date.now() - startTime;
-        var speed = dist / (duration / HOUR_MILLI);
-        var estimateTime = distToTarget / speed; // in hour
+        var calSpeed = dist / (duration / HOUR_MILLI);
+        var estimateTime = (distToTarget / calSpeed) * HOUR_MILLI; // in milli
         
         // Moving away from target? Check the accuracy. If true, reset the start point
         if (dist + startPoint.accuracy * 1000 > distToTarget + coords.accuracy + 1000) {
           startPoint = position.coords;
         }
+        
+        speed.text(calSpeed + " km/h");
+        eta.text((new Date(estimateTime)).toTimeString());
+        distanceToTarget.text(Math.round(dist * 1000) + "m");
+        
+        var newCurrent = Math.round(124 * (dist / (distToTarget + dist)));
+        var pos = current.position();
+        if (newCurrent != pos.x) {
+          pos.x = newCurrent;
+
+          current.animate('position', pos);
+        }
       } else {
         startPosition = position.coords;
       }
       
-      main.body(body);
     }, function(error){
       console.log(error);
     }, {
