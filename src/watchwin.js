@@ -175,20 +175,23 @@ current.animate('position', pos);
 
       if (startPosition) {
         // Speed
-        var dist = distance(startPoint.longitude, startPoint.latitude, position.coords.longitude, position.coords.latitude);
+        var dist = distance(startPosition.longitude, startPosition.latitude, position.coords.longitude, position.coords.latitude);
         var duration = Date.now() - startTime;
         var calSpeed = dist / (duration / HOUR_MILLI);
         var estimateTime = (distToTarget / calSpeed) * HOUR_MILLI; // in milli
         // Moving away from target? Check the accuracy. If true, reset the start point
-        if (dist + startPoint.accuracy * 1000 > distToTarget + coords.accuracy + 1000) {
-          startPoint = position.coords;
+        if (dist + startPosition.accuracy * 1000 > distToTarget + coords.accuracy + 1000) {
+          startPosition = position.coords;
         }
         
-        speed.text(calSpeed + " km/h");
-        eta.text((new Date(estimateTime)).toTimeString());
+        speed.text(Math.round(calSpeed) + " km/h");
+        if (estimateTime > 0) {
+          eta.text((new Date(estimateTime)).toTimeString());
+
+        }
         distanceToTarget.text(Math.round(dist * 1000) + "m");
         
-        var newCurrent = Math.round(124 * (dist / (distToTarget + dist)));
+        var newCurrent = Math.round(124 * (dist / (distToTarget + dist))) + 10;
         var pos = current.position();
         if (newCurrent != pos.x) {
           pos.x = newCurrent;
@@ -224,5 +227,5 @@ current.animate('position', pos);
             Math.sin(dLon/2) * Math.sin(dLon/2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     var d = R * c; // Distance in km
-    return d;
+    return Math.abs(d);
   }
