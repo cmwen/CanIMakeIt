@@ -25,11 +25,11 @@ exports.getMenu = function() {
       }]
     }]
   });
-  
+
   menu.on('show', function(e) {
     reloadLocation(e.menu);
   });
-  
+
   menu.on('select', function(e) {
     if (e.item.title == ADD_NEW_LOCATION) {
       navigator.geolocation.getCurrentPosition(function(position) {
@@ -55,13 +55,13 @@ exports.getMenu = function() {
       });
     } else {
 //       var view = WatchView.getCard(e.item.coords);
-      var view = WatchWin.getWindow(e.item.coords);
+      var view = WatchWin.getWindow(e.item.coords, e.item.title);
 
       view.show();
     }
 
   });
-          
+
   return menu;
 };
 

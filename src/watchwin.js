@@ -1,63 +1,60 @@
 'use strict';
 
 var UI = require('ui');
-var Settings = require('settings');
-var ajax = require('ajax');
 var Locations = require('locations');
 var Vector2 = require('vector2');
 
 var HOUR_MILLI = 1000 * 60 * 60;
 
-exports.getWindow = function(coords) {
+exports.getWindow = function(/*object*/coords, /*String*/ address) {
   var startTime = Date.now();
   var startPosition;
 
-  var main = new UI.Window({
+  var watchWindow = new UI.Window({
     fullscreen: true
   });
 
   // Address
-  // ETA
-  // Distance
-  // Line *---- X---- *
-  // Speed
+  // ETA  Current
+  // ProgressBar *---- X---- *
+  // Distance Speed
   // Accu/ alttitute ?
-  var address = new UI.Text({
-    text: "Berowra Station, Pacific Hightway",
-     position: new Vector2(0, 0),
+  var addressLabel = new UI.Text({
+    text: address,
+    position: new Vector2(0, 0),
     size: new Vector2(144, 15),
     font: 'gothic-14',
     textOverflow: 'ellipsis'
   });
-  main.add(address);
+  watchWindow.add(addressLabel);
 
   var etaLabel = new UI.Text({
-    text: "ETA",
+    text: "Estimate Time",
     position: new Vector2(0, 15),
     size: new Vector2(72, 15),
     font: 'gothic-14',
     textAlign: 'center'
   });
-  main.add(etaLabel);
+  watchWindow.add(etaLabel);
 
   var timeLabel = new UI.Text({
-    text: "Time",
+    text: "Current Time",
     position: new Vector2(72, 15),
     size: new Vector2(72, 15),
     font: 'gothic-14',
     textAlign: 'center'
   });
-  main.add(timeLabel);
+  watchWindow.add(timeLabel);
 
   var eta = new UI.Text({
     text: "--:--",
      position: new Vector2(0, 25),
     size: new Vector2(72, 45),
-  font: 'gothic-28-bold',
-  color: 'white',
-  textAlign: 'center'
+    font: 'gothic-28-bold',
+    color: 'white',
+    textAlign: 'center'
   });
-  main.add(eta);
+  watchWindow.add(eta);
 
  var currentTime = new UI.TimeText({
     position: new Vector2(72, 25),
@@ -67,136 +64,129 @@ exports.getWindow = function(coords) {
     color: 'white',
     textAlign: 'center'
   });
-  main.add(currentTime);
+  watchWindow.add(currentTime);
 
-    // 55  ~ 75
-  var background = new UI.Rect({
-  position: new Vector2(0, 55),
-  size: new Vector2(144, 40),
-  backgroundColor: 'white'
-});
-  main.add(background);
+  // Begin Progress Bar
+  // backgournd of progress bar
+  // y: 55 ~ 95
+  var progressBg = new UI.Rect({
+    position: new Vector2(0, 55),
+    size: new Vector2(144, 40),
+    progressBgColor: 'white'
+  });
+  watchWindow.add(progressBg);
 
+  var progressLine = new UI.Rect({
+    position: new Vector2(10, 75),
+    size: new Vector2(124, 3),
+    backgroundColor: 'black'
+  });
+  watchWindow.add(progressLine);
 
-  // 55  ~ 75
-  var line = new UI.Rect({
-  position: new Vector2(10, 75),
-  size: new Vector2(124, 3),
-  backgroundColor: 'black'
-});
-  main.add(line);
+  var progressStartPoint = new UI.Circle({
+    position: new Vector2(10, 76),
+    radius: 4,
+    backgroundColor: 'white',
+    borderColor: 'black'
+  });
+  watchWindow.add(progressStartPoint);
 
-  var start = new UI.Circle({
-  position: new Vector2(10, 76),
-  radius: 4,
-  backgroundColor: 'white',
-  borderColor: 'black'
+  var progressEndPoint = new UI.Circle({
+    position: new Vector2(134, 76),
+    radius: 4,
+    backgroundColor: 'white',
+    borderColor: 'black'
+  });
+  watchWindow.add(progressEndPoint);
 
-});
-  main.add(start);
+  var currentProgressPoint = new UI.Circle({
+    position: new Vector2(74, 76),
+    radius: 6,
+    backgroundColor: 'black',
+    borderColor: 'black'
+  });
+  watchWindow.add(currentProgressPoint);
 
-var end = new UI.Circle({
-  position: new Vector2(134, 76),
-  radius: 4,
-  backgroundColor: 'white',
-  borderColor: 'black'
-
-});
-  main.add(end);
-
-var current = new UI.Circle({
-  position: new Vector2(74, 76),
-  radius: 6,
-  backgroundColor: 'black',
-  borderColor: 'black'
-});
-  main.add(current);
+  // End Progress Bar
 
   var distanceLabel = new UI.Text({
      text: "Distance",
      position: new Vector2(0, 95),
      size: new Vector2(72, 15),
      font: 'gothic-14',
-     textAlign: 'center' 
+     textAlign: 'center'
   });
-  main.add(distanceLabel);
+  watchWindow.add(distanceLabel);
 
-
-  var distanceToTarget = new UI.Text({
+  var distanceToTargetText = new UI.Text({
      text: "---- m",
      position: new Vector2(0, 110),
      size: new Vector2(72, 30),
-  font: 'gothic-28-bold',
-  color: 'white',
-  textAlign: 'center'    
-
+    font: 'gothic-28-bold',
+    color: 'white',
+    textAlign: 'center'
   });
-  main.add(distanceToTarget);
+  watchWindow.add(distanceToTargetText);
 
   var speedLabel = new UI.Text({
     text: "Speed",
      position: new Vector2(72, 95),
-    size: new Vector2(72, 15),
+     size: new Vector2(72, 15),
      font: 'gothic-14',
-     textAlign: 'center' 
+     textAlign: 'center'
+   });
+  watchWindow.add(speedLabel);
 
-  });
-  main.add(speedLabel);
-
-
-  var speed = new UI.Text({
+  var speedText = new UI.Text({
     text: "-- km/h",
      position: new Vector2(72, 110),
     size: new Vector2(72, 30),
-  font: 'gothic-28-bold',
-  color: 'white',
-  textAlign: 'center'    
-
+    font: 'gothic-28-bold',
+    color: 'white',
+    textAlign: 'center'
   });
-  main.add(speed);
+  watchWindow.add(speedText);
 
-
-  main.on('click', 'up', function(e) {
-    var pos = current.position();
-pos.x += 10;
-current.animate('position', pos);
+  watchWindow.on('click', 'up', function(e) {
+    // var pos = currentProgressPoint.position();
+    // pos.x += 10;
+    // currentProgressPoint.animate('position', pos);
   });
 
-  main.on('click', 'down', function(e) {
-    var pos = current.position();
-    pos.x -= 10;
-    current.animate('position', pos);
+  watchWindow.on('click', 'down', function(e) {
+    // var pos = currentProgressPoint.position();
+    // pos.x -= 10;
+    // currentProgressPoint.animate('position', pos);
   });
 
+  // Remember the watchID, when user hide this view, cancel the watch
   var watchID;
-  main.on('show', function(){
+  watchWindow.on('show', function(){
     watchID = navigator.geolocation.watchPosition(function(position) {
       var distToTarget = distance(coords.longitude, coords.latitude, position.coords.longitude, position.coords.latitude);
 
       if (startPosition) {
-        // Speed
-        var dist = distance(startPosition.longitude, startPosition.latitude, position.coords.longitude, position.coords.latitude);
         var duration = Date.now() - startTime;
-        var calSpeed = dist / (duration / HOUR_MILLI);
+        var distanceToStart = distance(startPosition.longitude, startPosition.latitude, position.coords.longitude, position.coords.latitude);
+        var calSpeed = distanceToStart / (duration / HOUR_MILLI);
         var estimateTime = (distToTarget / calSpeed) * HOUR_MILLI; // in milli
         // Moving away from target? Check the accuracy. If true, reset the start point
-        if (dist + startPosition.accuracy * 1000 > distToTarget + coords.accuracy + 1000) {
-          startPosition = position.coords;
-        }
-        
-        speed.text(Math.round(calSpeed) + " km/h");
+        // if (dist + startPosition.accuracy * 1000 > distToTarget + coords.accuracy * 1000) {
+        //   startPosition = position.coords;
+        // }
+
+        speedText.text(Math.round(calSpeed) + " km/h");
         if (estimateTime > 0) {
           eta.text((new Date(estimateTime)).toTimeString());
-
         }
-        distanceToTarget.text(Math.round(dist * 1000) + "m");
-        
-        var newCurrent = Math.round(124 * (dist / (distToTarget + dist))) + 10;
-        var pos = current.position();
+        distanceToTargetText.text(Math.round(distToTarget * 1000) + "m");
+
+        var newCurrent = Math.round(124 * (distanceToStart / (distToTarget + distanceToStart))) + 10;
+        var pos = currentProgressPoint.position();
         if (newCurrent != pos.x) {
           pos.x = newCurrent;
 
-          current.animate('position', pos);
+          currentProgressPoint.animate('position', pos);
         }
       } else {
         startPosition = position.coords;
@@ -208,14 +198,14 @@ current.animate('position', pos);
     });
   });
 
-  main.on('hide', function(){
+  watchWindow.on('hide', function(){
     if (watchID) {
       navigator.geolocation.clearWatch(watchID);
     }
   });
 
 
-  return main;
+  return watchWindow;
 };
 
   function distance(lon1, lat1, lon2, lat2) {
