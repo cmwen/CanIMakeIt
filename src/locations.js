@@ -3,7 +3,6 @@
 var Store = require('store');
 var UI = require('ui');
 var ajax = require('ajax');
-var WatchView = require('watchcard');
 var WatchWin = require('watchwin');
 
 

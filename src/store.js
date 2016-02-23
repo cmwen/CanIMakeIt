@@ -45,7 +45,7 @@ exports.highAccuracy = function(/*boolean*/ enabled) {
 exports.vibeWhenETAChanged = function(/*boolean*/ enabled) {
   if (Settings.data(VIBRATE_WHEN_ETA_CHANGED) === undefined) {
     // enabled by default
-    Settings.data(VIBRATE_WHEN_ETA_CHANGED, true); 
+    Settings.data(VIBRATE_WHEN_ETA_CHANGED, false); 
   }
   if (enabled === undefined) {
     return Settings.data(VIBRATE_WHEN_ETA_CHANGED);
