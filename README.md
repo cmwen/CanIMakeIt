@@ -17,8 +17,9 @@ Pre 2. Choose a name? REST api that get the name from coordinates
 Current speed = distance of start to current / time
 ETA
 
-
-# TODO
 1. Option to turn off enableHighAccuracy, to save battery
 2. Vibrate when ETA changed
 3. Shows GPS accuracy
+
+# TODO
+1. Use more accurate position as start point

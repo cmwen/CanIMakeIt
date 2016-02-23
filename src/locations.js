@@ -39,31 +39,43 @@ exports.getMenu = function() {
     reloadLocation(e.menu);
   });
 
+  var MAX_RETRY = 3; // retry 3 times to get more accuracy
+  var ACCURACY = 5; // meter
+  function getPosition(times) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      console.log(position);
+      if (position.coords.accuracy && position.coords.accuracy < ACCURACY
+        || times > MAX_RETRY) {
+          var url = 'http://nominatim.openstreetmap.org/reverse?format=json&lat=' + position.coords.latitude + '&lon=' + position.coords.longitude + '&zoom=18&addressdetails=1';
+          ajax(
+            {
+              url: url,
+              type: 'json'
+            },
+            function(data, status, request) {
+              var location = {
+                title : data.display_name,
+                subtitle : data.display_name,
+                coords: position.coords
+              };
+              Store.addLocation(location);
+              reloadLocation(menu);
+            },
+            function(error, status, request) {
+              console.log('The ajax request failed: ' + error);
+            });
+          // TODO show a warning when the accuracy is still not statisfied.
+      } else {
+        getPosition(times++);
+      }
+    }, {
+      enableHighAccuracy: true
+    });
+  };
+
   menu.on('select', function(e) {
     if (e.item.title == ADD_NEW_LOCATION) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-      console.log(position);
-      var url = 'http://nominatim.openstreetmap.org/reverse?format=json&lat=' + position.coords.latitude + '&lon=' + position.coords.longitude + '&zoom=18&addressdetails=1';
-      ajax(
-        {
-          url: url,
-          type: 'json'
-        },
-        function(data, status, request) {
-          var location = {
-            title : data.display_name,
-            subtitle : data.display_name,
-            coords: position.coords
-          };
-          Store.addLocation(location);
-          reloadLocation(menu);
-        },
-        function(error, status, request) {
-          console.log('The ajax request failed: ' + error);
-        });
-      }, {
-        enableHighAccuracy: true
-      });
+      getPosition(1);
     } else if (e.item.title == DELETE_LOCATIONS) {
       Store.resetLocations();
     } else if (e.item.title.indexOf(ENABLED_HIGH_ACCURACY) === 0) {

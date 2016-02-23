@@ -169,7 +169,7 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
   });
   watchWindow.add(accuracyText);
 
-  
+
   watchWindow.on('click', 'up', function(e) {
     // var pos = currentProgressPoint.position();
     // pos.x += 10;
@@ -183,25 +183,26 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
   });
 
   // accurecy: minute
-  var etaReminder; 
+  var etaReminder;
   // Remember the watchID, when user hide this view, cancel the watch
   var watchID;
   watchWindow.on('show', function(){
     watchID = navigator.geolocation.watchPosition(function(position) {
       var distToTarget = distance(coords.longitude, coords.latitude, position.coords.longitude, position.coords.latitude);
+      var duration = Date.now() - startTime;
+
       if (position.coords.accuracy) {
-              accuracyText.text(Math.round(position.coords.accuracy) + "m");
+        accuracyText.text(Math.round(position.coords.accuracy) + "m");
+        // First 30 seconds, try to find more accurate start point
+        if (duration < 30000 && startPosition && position.coords.accuracy < startPosition.accuracy) {
+          startPosition = position.coords;
+        }
       }
 
       if (startPosition) {
-        var duration = Date.now() - startTime;
         var distanceToStart = distance(startPosition.longitude, startPosition.latitude, position.coords.longitude, position.coords.latitude);
         var calSpeed = distanceToStart / (duration / HOUR_MILLI);
         var estimateTime = (distToTarget / calSpeed) * HOUR_MILLI; // in milli
-        // Moving away from target? Check the accuracy. If true, reset the start point
-        // if (dist + startPosition.accuracy * 1000 > distToTarget + coords.accuracy * 1000) {
-        //   startPosition = position.coords;
-        // }
 
         speedText.text(Math.round(calSpeed) + " km/h");
         if (estimateTime > 0) {
