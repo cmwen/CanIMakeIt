@@ -9,6 +9,7 @@ var WatchWin = require('watchwin');
 
 var ADD_NEW_LOCATION= 'New Location';
 var DELETE_LOCATIONS = 'Delete Locations';
+var ENABLED_HIGH_ACCURACY = 'High Accuracy:';
 
 exports.getMenu = function() {
   var menu = new UI.Menu({
@@ -19,6 +20,9 @@ exports.getMenu = function() {
       items: [{
         title: ADD_NEW_LOCATION,
         subtitle: "Mark my position"
+      }, {
+        title: ENABLED_HIGH_ACCURACY + Store.highAccuracy(),
+        subtitle: "More accuracy, more powser consumption"
       }, {
         title: DELETE_LOCATIONS,
         subtitle: "Delete all locations"
@@ -53,6 +57,10 @@ exports.getMenu = function() {
           console.log('The ajax request failed: ' + error);
         });
       });
+    } else if (e.item.title == DELETE_LOCATIONS) {
+      Store.resetLocations();
+    } else if (e.item.title.indexOf(ENABLED_HIGH_ACCURACY) > 0) {
+      Store.highAccuracy(!Store.highAccuracy());
     } else {
 //       var view = WatchView.getCard(e.item.coords);
       var view = WatchWin.getWindow(e.item.coords, e.item.title);

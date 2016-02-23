@@ -3,9 +3,9 @@
 var Settings = require('settings');
 
 var MARKED_LOCATIONS = 'markedLocations';
+var HIGH_ACCURACY_ENABLED = 'enableHighAccuracy';
 
-
-// Location format 
+// Location format
 // {
 //   title:
 //   subtitle:
@@ -13,7 +13,7 @@ var MARKED_LOCATIONS = 'markedLocations';
 // }
 exports.addLocation = function (/*object*/ location) {
   var markedLocations = Settings.data(MARKED_LOCATIONS);
-  
+
   if (!markedLocations) {
     markedLocations = [];
   }
@@ -24,3 +24,15 @@ exports.addLocation = function (/*object*/ location) {
 exports.getLocations = function() {
   return Settings.data(MARKED_LOCATIONS);
 };
+
+exports.resetLocations = function() {
+    Settings.data(MARKED_LOCATIONS, []);
+};
+
+exports.highAccuracy = function(/*boolean*/ enabled) {
+  if (enabled === undefined) {
+    return Settings.data(HIGH_ACCURACY_ENABLED);
+  } else {
+    return Settings.data(HIGH_ACCURACY_ENABLED, enabled);
+  }
+}
