@@ -9,7 +9,9 @@ var WatchWin = require('watchwin');
 
 var ADD_NEW_LOCATION= 'New Location';
 var DELETE_LOCATIONS = 'Delete Locations';
-var ENABLED_HIGH_ACCURACY = 'High Accuracy:';
+
+var ENABLED_HIGH_ACCURACY = 'GPS Accuracy:';
+var VIBRATE_WHEN_ETA_CHANGED = 'Vibrate:';
 
 exports.getMenu = function() {
   var menu = new UI.Menu({
@@ -23,6 +25,10 @@ exports.getMenu = function() {
       }, {
         title: ENABLED_HIGH_ACCURACY + Store.highAccuracy(),
         subtitle: "More accuracy, more powser consumption"
+      }, {
+        title: VIBRATE_WHEN_ETA_CHANGED + Store.vibeWhenETAChanged(),
+        subtitle: "When estimate time changed"
+
       }, {
         title: DELETE_LOCATIONS,
         subtitle: "Delete all locations"
@@ -56,11 +62,17 @@ exports.getMenu = function() {
         function(error, status, request) {
           console.log('The ajax request failed: ' + error);
         });
+      }, {
+        enableHighAccuracy: true
       });
     } else if (e.item.title == DELETE_LOCATIONS) {
       Store.resetLocations();
-    } else if (e.item.title.indexOf(ENABLED_HIGH_ACCURACY) > 0) {
+    } else if (e.item.title.indexOf(ENABLED_HIGH_ACCURACY) === 0) {
       Store.highAccuracy(!Store.highAccuracy());
+      e.menu.item(e.sectionIndex, e.itemIndex, {title: ENABLED_HIGH_ACCURACY + Store.highAccuracy()});
+    } else if (e.item.title.indexOf(VIBRATE_WHEN_ETA_CHANGED) === 0) {
+      Store.vibeWhenETAChanged(!Store.vibeWhenETAChanged());
+      e.menu.item(e.sectionIndex, e.itemIndex, {title: VIBRATE_WHEN_ETA_CHANGED + Store.vibeWhenETAChanged()});
     } else {
 //       var view = WatchView.getCard(e.item.coords);
       var view = WatchWin.getWindow(e.item.coords, e.item.title);

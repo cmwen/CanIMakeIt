@@ -3,6 +3,9 @@
 var UI = require('ui');
 var Locations = require('locations');
 var Vector2 = require('vector2');
+var Store = require('store');
+var Vibe = require('ui/vibe');
+
 
 var HOUR_MILLI = 1000 * 60 * 60;
 
@@ -147,6 +150,26 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
   });
   watchWindow.add(speedText);
 
+  var accuracyLabel = new UI.Text({
+    text: "Accuracy",
+     position: new Vector2(0, 144),
+     size: new Vector2(72, 15),
+     font: 'gothic-14',
+     textAlign: 'center'
+   });
+  watchWindow.add(accuracyLabel);
+
+  var accuracyText = new UI.Text({
+    text: "---- m",
+     position: new Vector2(72, 144),
+    size: new Vector2(72, 15),
+    font: 'gothic-14',
+    color: 'white',
+    textAlign: 'center'
+  });
+  watchWindow.add(accuracyText);
+
+  
   watchWindow.on('click', 'up', function(e) {
     // var pos = currentProgressPoint.position();
     // pos.x += 10;
@@ -159,11 +182,16 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
     // currentProgressPoint.animate('position', pos);
   });
 
+  // accurecy: minute
+  var etaReminder; 
   // Remember the watchID, when user hide this view, cancel the watch
   var watchID;
   watchWindow.on('show', function(){
     watchID = navigator.geolocation.watchPosition(function(position) {
       var distToTarget = distance(coords.longitude, coords.latitude, position.coords.longitude, position.coords.latitude);
+      if (position.coords.accuracy) {
+              accuracyText.text(Math.round(position.coords.accuracy) + "m");
+      }
 
       if (startPosition) {
         var duration = Date.now() - startTime;
@@ -177,7 +205,14 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
 
         speedText.text(Math.round(calSpeed) + " km/h");
         if (estimateTime > 0) {
-          eta.text((new Date(estimateTime)).toTimeString());
+          var etaInMin = Math.round(estimateTime/ (1000* 60));
+          eta.text((new Date(etaInMin * 60 * 1000)).toTimeString());
+          if (!etaReminder) {
+            etaReminder = etaInMin;
+          } else if (etaReminder != etaInMin && Store.vibeWhenETAChanged()) {
+            Vibe.vibrate('short');
+            etaReminder = etaInMin;
+          }
         }
         distanceToTargetText.text(Math.round(distToTarget * 1000) + "m");
 
@@ -194,7 +229,7 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
     }, function(error){
       console.log(error);
     }, {
-        enableHighAccuracy: true
+        enableHighAccuracy: Store.highAccuracy()
     });
   });
 
