@@ -1,7 +1,12 @@
 # CanIMakeIt
 
+# How to use
+You need to be the location you want to go to, for example, the train station you normally commute to. Set your current position as you destination. At the moment, this is the only way to set your destination.
+Next time, when you want to travel to this station(destination), you can just select the location you are going to commute to in this app, if you see the distance to your destination, and the estimate arrival time base on your current speed.
+Note: the speed and estimate arrival time is using caculated with a very simple algorithm. You still need to judge by yourself.
+
 Pre 1. Set the destination
-Pre 2. Choose a name? REST api that get the name from coordinates
+Pre 2.
 1. Start the app
   1. Select destination
   2. Calculate the distance
@@ -10,6 +15,9 @@ Pre 2. Choose a name? REST api that get the name from coordinates
      *----X----*
       SPD: 5 km/h
   4. (Optional) Set timer using estimate time. Vibe when Estimate time changed.
+
+# How this works (algorithm)
+three points.
 
 # Features:
 1. Get the address of current position.
