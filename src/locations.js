@@ -6,28 +6,31 @@ var ajax = require('ajax');
 var WatchWin = require('watchwin');
 
 
-var ADD_NEW_LOCATION= 'New Location';
-var DELETE_LOCATIONS = 'Delete Locations';
+var ADD_NEW_LOCATION= 'Add bookmark';
+var DELETE_LOCATIONS = 'Delete Bookmarks';
 
-var ENABLED_HIGH_ACCURACY = 'GPS Accuracy:';
-var VIBRATE_WHEN_ETA_CHANGED = 'Vibrate:';
+var ENABLED_HIGH_ACCURACY = 'HIGH GPS Accuracy';
+var VIBRATE_WHEN_ETA_CHANGED = 'Vibrate';
+var USE_GPS_SPEED = "Use GPS Speed";
 
 exports.getMenu = function() {
   var menu = new UI.Menu({
     sections: [{
-      title: "Locations"
+      title: "Bookmarks"
     }, {
       title: "Actions",
       items: [{
         title: ADD_NEW_LOCATION,
         subtitle: "Mark my position"
       }, {
-        title: ENABLED_HIGH_ACCURACY + Store.highAccuracy(),
-        subtitle: "More accuracy, more powser consumption"
+        title: ENABLED_HIGH_ACCURACY,
+        subtitle: Store.highAccuracy()
       }, {
-        title: VIBRATE_WHEN_ETA_CHANGED + Store.vibeWhenETAChanged(),
-        subtitle: "When estimate time changed"
-
+        title: VIBRATE_WHEN_ETA_CHANGED,
+        subtitle: Store.vibeWhenETAChanged()
+      }, {
+        title: USE_GPS_SPEED,
+        subtitle: Store.showGPSSpeed()
       }, {
         title: DELETE_LOCATIONS,
         subtitle: "Delete all locations"
@@ -78,12 +81,15 @@ exports.getMenu = function() {
       getPosition(1);
     } else if (e.item.title == DELETE_LOCATIONS) {
       Store.resetLocations();
-    } else if (e.item.title.indexOf(ENABLED_HIGH_ACCURACY) === 0) {
+    } else if (e.item.title == ENABLED_HIGH_ACCURACY) {
       Store.highAccuracy(!Store.highAccuracy());
-      e.menu.item(e.sectionIndex, e.itemIndex, {title: ENABLED_HIGH_ACCURACY + Store.highAccuracy()});
-    } else if (e.item.title.indexOf(VIBRATE_WHEN_ETA_CHANGED) === 0) {
+      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: Store.highAccuracy()});
+    } else if (e.item.title == VIBRATE_WHEN_ETA_CHANGED) {
       Store.vibeWhenETAChanged(!Store.vibeWhenETAChanged());
-      e.menu.item(e.sectionIndex, e.itemIndex, {title: VIBRATE_WHEN_ETA_CHANGED + Store.vibeWhenETAChanged()});
+      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: Store.vibeWhenETAChanged()});
+    } else if (e.item.title == USE_GPS_SPEED) {
+      Store.showGPSSpeed(!Store.showGPSSpeed());
+      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: Store.showGPSSpeed()});
     } else {
 //       var view = WatchView.getCard(e.item.coords);
       var view = WatchWin.getWindow(e.item.coords, e.item.title);

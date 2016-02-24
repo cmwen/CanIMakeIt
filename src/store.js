@@ -5,6 +5,7 @@ var Settings = require('settings');
 var MARKED_LOCATIONS = 'markedLocations';
 var HIGH_ACCURACY_ENABLED = 'enableHighAccuracy';
 var VIBRATE_WHEN_ETA_CHANGED = 'vibeWhenEtaChanged';
+var SHOW_GPS_SPEED = 'showGPSSpeed';
 
 // Location format
 // {
@@ -33,7 +34,7 @@ exports.resetLocations = function() {
 exports.highAccuracy = function(/*boolean*/ enabled) {
   if (Settings.data(HIGH_ACCURACY_ENABLED) === undefined) {
     // enabled by default
-    Settings.data(HIGH_ACCURACY_ENABLED, true); 
+    Settings.data(HIGH_ACCURACY_ENABLED, true);
   }
   if (enabled === undefined) {
     return Settings.data(HIGH_ACCURACY_ENABLED);
@@ -44,12 +45,24 @@ exports.highAccuracy = function(/*boolean*/ enabled) {
 
 exports.vibeWhenETAChanged = function(/*boolean*/ enabled) {
   if (Settings.data(VIBRATE_WHEN_ETA_CHANGED) === undefined) {
-    // enabled by default
-    Settings.data(VIBRATE_WHEN_ETA_CHANGED, false); 
+    // disabled by default
+    Settings.data(VIBRATE_WHEN_ETA_CHANGED, false);
   }
   if (enabled === undefined) {
     return Settings.data(VIBRATE_WHEN_ETA_CHANGED);
   } else {
     return Settings.data(VIBRATE_WHEN_ETA_CHANGED, enabled);
+  }
+}
+
+exports.showGPSSpeed = function(/*boolean*/ enabled) {
+  if (Settings.data(SHOW_GPS_SPEED) === undefined) {
+    // disable by default
+    Settings.data(SHOW_GPS_SPEED, false);
+  }
+  if (enabled === undefined) {
+    return Settings.data(SHOW_GPS_SPEED);
+  } else {
+    return Settings.data(SHOW_GPS_SPEED, enabled);
   }
 }

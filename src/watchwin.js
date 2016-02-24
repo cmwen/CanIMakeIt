@@ -186,6 +186,9 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
   var etaReminder;
   // Remember the watchID, when user hide this view, cancel the watch
   var watchID;
+  // keep the old gps speed if it's not changed, km/h
+  var gpsSpeed = 0;
+  var options = {hour: 'numeric', minute: 'numeric'};
   watchWindow.on('show', function(){
     watchID = navigator.geolocation.watchPosition(function(position) {
       var distToTarget = distance(coords.longitude, coords.latitude, position.coords.longitude, position.coords.latitude);
@@ -201,13 +204,24 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
 
       if (startPosition) {
         var distanceToStart = distance(startPosition.longitude, startPosition.latitude, position.coords.longitude, position.coords.latitude);
-        var calSpeed = distanceToStart / (duration / HOUR_MILLI);
+        var calSpeed = 0;
+        if (Store.showGPSSpeed()) {
+          if (position.coords.speed) {
+            calSpeed = position.coords.speed * 60 * 60 / 1000; // Meters per sencod to KM per hour
+            gpsSpeed = calSpeed;
+          } else {
+            calSpeed = gpsSpeed;
+          }
+        } else {
+          calSpeed = distanceToStart / (duration / HOUR_MILLI);
+        }
         var estimateTime = (distToTarget / calSpeed) * HOUR_MILLI; // in milli
 
         speedText.text(Math.round(calSpeed) + " km/h");
         if (estimateTime > 0) {
-          var etaInMin = Math.round(estimateTime/ (1000* 60));
-          eta.text((new Date(etaInMin * 60 * 1000)).toTimeString());
+          var etaTime = new Date(Date.now() + estimateTime);
+          var etaInMin = Math.round(estimateTime/ (1000 * 60));
+          eta.text(etaTime.toLocaleString(navigator.language, options));
           if (!etaReminder) {
             etaReminder = etaInMin;
           } else if (etaReminder != etaInMin && Store.vibeWhenETAChanged()) {
