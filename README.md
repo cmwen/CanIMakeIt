@@ -6,9 +6,9 @@ You need to be the location you want to go to, for example, the train station yo
 
 # How this works (algorithm)
 Based on three points. Start point, the position you lunch this app. Current, the position getting from GPS. Destination, the marked position.
-Your speed = distance of start to current / time
+Your speed = distance of start to current / time OR GPS speed
 Estimated Arrival Time = distance to destination / Your speed
-Note: Just this simple, it assume you are directly heading to your destination, so it's not accurate at all.
+Note: It's just this simple, it assume you are directly heading to your destination, so it's not accurate at all.
 
 
 # Features:
@@ -17,3 +17,4 @@ Note: Just this simple, it assume you are directly heading to your destination, 
 3. Option to turn off enableHighAccuracy, can be used to save battery.
 4. Vibrate when ETA changed
 5. Shows GPS accuracy
+6. Options to show/use GPS speed
