@@ -4,6 +4,8 @@ Wondering when you will get to the station everything when you rush out your hom
 # How to use
 You need to be the location you want to go to, for example, the train station you normally commute to. Mark your current position as you destination. At the moment, this is the only way to set your destination. Next time, when you want to travel to this station(destination), you can just select the location you that you mark in this watch app. What you will see is the distance to your destination, and the estimate arrival time base on your current speed. Note: the speed and estimate arrival time is calculated with a very simple algorithm. It's for your reference only.
 
+In the navigation view, press UP to toggle vibrate when ETA changed, press SELECT to toggle GPS High accuracy, press DOWN to toggle showing GPS speed.
+
 # How this works (algorithm)
 Based on three points. Start point, the position you lunch this app. Current, the position getting from GPS. Destination, the marked position.
 Your speed = distance of start to current / time OR GPS speed
