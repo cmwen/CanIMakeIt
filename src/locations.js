@@ -24,13 +24,13 @@ exports.getMenu = function() {
         subtitle: "Mark my position"
       }, {
         title: ENABLED_HIGH_ACCURACY,
-        subtitle: Store.highAccuracy()
+        subtitle: getString(Store.highAccuracy())
       }, {
         title: VIBRATE_WHEN_ETA_CHANGED,
-        subtitle: Store.vibeWhenETAChanged()
+        subtitle: getString(Store.vibeWhenETAChanged())
       }, {
         title: USE_GPS_SPEED,
-        subtitle: Store.showGPSSpeed()
+        subtitle: getString(Store.showGPSSpeed())
       }, {
         title: DELETE_LOCATIONS,
         subtitle: "Delete all locations"
@@ -46,7 +46,6 @@ exports.getMenu = function() {
   var ACCURACY = 5; // meter
   function getPosition(times) {
     navigator.geolocation.getCurrentPosition(function(position) {
-      console.log(position);
       if (position.coords.accuracy && position.coords.accuracy < ACCURACY
         || times > MAX_RETRY) {
           var url = 'http://nominatim.openstreetmap.org/reverse?format=json&lat=' + position.coords.latitude + '&lon=' + position.coords.longitude + '&zoom=18&addressdetails=1';
@@ -69,7 +68,7 @@ exports.getMenu = function() {
             });
           // TODO show a warning when the accuracy is still not statisfied.
       } else {
-        getPosition(times++);
+        getPosition(++times);
       }
     }, {
       enableHighAccuracy: true
@@ -83,13 +82,13 @@ exports.getMenu = function() {
       Store.resetLocations();
     } else if (e.item.title == ENABLED_HIGH_ACCURACY) {
       Store.highAccuracy(!Store.highAccuracy());
-      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: Store.highAccuracy()});
+      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: getString(Store.highAccuracy())});
     } else if (e.item.title == VIBRATE_WHEN_ETA_CHANGED) {
       Store.vibeWhenETAChanged(!Store.vibeWhenETAChanged());
-      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: Store.vibeWhenETAChanged()});
+      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: getString(Store.vibeWhenETAChanged())});
     } else if (e.item.title == USE_GPS_SPEED) {
       Store.showGPSSpeed(!Store.showGPSSpeed());
-      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: Store.showGPSSpeed()});
+      e.menu.item(e.sectionIndex, e.itemIndex, {subtitle: getString(Store.showGPSSpeed())});
     } else {
 //       var view = WatchView.getCard(e.item.coords);
       var view = WatchWin.getWindow(e.item.coords, e.item.title);
@@ -112,5 +111,13 @@ function reloadLocation(menu) {
 
       menu.items(0, locations);
       menu.selection(0, 0);
+  }
+}
+
+function getString(/** boolean */ on) {
+  if (on) {
+    return 'On';
+  } else {
+    return 'Off';
   }
 }

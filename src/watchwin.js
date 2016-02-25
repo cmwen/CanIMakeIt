@@ -161,7 +161,7 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
 
   var accuracyText = new UI.Text({
     text: "---- m",
-     position: new Vector2(72, 144),
+    position: new Vector2(72, 144),
     size: new Vector2(72, 15),
     font: 'gothic-14',
     color: 'white',
@@ -171,15 +171,15 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
 
 
   watchWindow.on('click', 'up', function(e) {
-    // var pos = currentProgressPoint.position();
-    // pos.x += 10;
-    // currentProgressPoint.animate('position', pos);
+    Store.vibeWhenETAChanged(!Store.vibeWhenETAChanged());
   });
 
   watchWindow.on('click', 'down', function(e) {
-    // var pos = currentProgressPoint.position();
-    // pos.x -= 10;
-    // currentProgressPoint.animate('position', pos);
+    Store.showGPSSpeed(!Store.showGPSSpeed());
+  });
+
+  watchWindow.on('click', 'select', function(e) {
+    Store.highAccuracy(!Store.highAccuracy());
   });
 
   // accurecy: minute
