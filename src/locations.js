@@ -10,7 +10,7 @@ var ADD_NEW_LOCATION= 'Add bookmark';
 var DELETE_LOCATIONS = 'Delete Bookmarks';
 
 var ENABLED_HIGH_ACCURACY = 'HIGH GPS Accuracy';
-var VIBRATE_WHEN_ETA_CHANGED = 'Vibrate';
+var VIBRATE_WHEN_ETA_CHANGED = 'Vibrate when ETA changed';
 var USE_GPS_SPEED = "Use GPS Speed";
 
 exports.getMenu = function() {
