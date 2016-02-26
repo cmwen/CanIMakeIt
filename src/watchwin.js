@@ -32,7 +32,7 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
   watchWindow.add(addressLabel);
 
   var etaLabel = new UI.Text({
-    text: "Estimate Time",
+    text: getEtaLabel(),
     position: new Vector2(0, 15),
     size: new Vector2(72, 15),
     font: 'gothic-14',
@@ -132,7 +132,7 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
   watchWindow.add(distanceToTargetText);
 
   var speedLabel = new UI.Text({
-    text: "Speed",
+     text: getSpeedLabel(),
      position: new Vector2(72, 95),
      size: new Vector2(72, 15),
      font: 'gothic-14',
@@ -151,7 +151,7 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
   watchWindow.add(speedText);
 
   var accuracyLabel = new UI.Text({
-    text: "Accuracy",
+    text: getAccuracyLabel(),
      position: new Vector2(0, 144),
      size: new Vector2(72, 15),
      font: 'gothic-14',
@@ -172,14 +172,17 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
 
   watchWindow.on('click', 'up', function(e) {
     Store.vibeWhenETAChanged(!Store.vibeWhenETAChanged());
+    etaLabel.text(getEtaLabel());
   });
 
   watchWindow.on('click', 'down', function(e) {
     Store.showGPSSpeed(!Store.showGPSSpeed());
+    speedLabel.text(getSpeedLabel());
   });
 
   watchWindow.on('click', 'select', function(e) {
     Store.highAccuracy(!Store.highAccuracy());
+    accuracyLabel.text(getAccuracyLabel());
   });
 
   // accurecy: minute
@@ -268,3 +271,27 @@ exports.getWindow = function(/*object*/coords, /*String*/ address) {
     var d = R * c; // Distance in km
     return Math.abs(d);
   }
+
+function getSpeedLabel() {
+  if (Store.showGPSSpeed()) {
+    return "GPS Speed";
+  } else {
+    return "AVG Speed";
+  }
+}
+
+function getAccuracyLabel() {
+  if (Store.highAccuracy()) {
+    return "Accuracy+";
+  } else {
+    return "Accuracy";
+  }
+}
+
+function getEtaLabel() {
+  if (Store.vibeWhenETAChanged()) {
+    return "<<ETA>>";
+  } else {
+    return "Estimate Time";
+  }
+}
